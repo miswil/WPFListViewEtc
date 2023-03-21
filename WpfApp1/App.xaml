@@ -1,0 +1,456 @@
+﻿<Application x:Class="WpfApp1.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:component="clr-namespace:System.ComponentModel;assembly=netstandard"
+             xmlns:local="clr-namespace:WpfApp1" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <BooleanToVisibilityConverter x:Key="B2VCnv"/>
+        <Style x:Key="SegoeIcon" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="FilterCheckBox"
+               TargetType="{x:Type CheckBox}">
+            <Setter Property="Margin" Value="10,5"/>
+        </Style>
+        <Style x:Key="FilterButtonStyle"
+               TargetType="{x:Type Button}">
+            <Setter Property="Command" Value="{Binding ResetFilterAndGroupCommand}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <TextBlock Style="{StaticResource SegoeIcon}"
+                                   Text="&#xE71C;"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="FilterMenuStyle" TargetType="{x:Type HeaderedContentControl}">
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type HeaderedContentControl}">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter ContentSource="Header"
+                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                  x:Name="PART_Header"/>
+                            </Border>
+                            <Popup x:Name="PART_Popup"
+                                   PlacementTarget="{Binding ElementName=PART_Header}"
+                                   Placement="Bottom"
+                                   HorizontalOffset="-5"
+                                   IsOpen="{TemplateBinding IsMouseOver}"
+                                   Visibility="Collapsed"
+                                   AllowsTransparency="True">
+                                <Button>
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Border Background="White"
+                                                    SnapsToDevicePixels="True"
+                                                    BorderThickness="1"
+                                                    BorderBrush="Black">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                    <ContentPresenter/>
+                                </Button>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Content" Value="{x:Null}">
+                                <Setter TargetName="PART_Popup" Property="IsOpen" Value="False"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsFiltering}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsGrouping}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsMouseOver, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}"
+                             Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="SortMenuStyle" TargetType="{x:Type MenuItem}">
+            <Setter Property="Padding" Value="5,0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Border VerticalAlignment="Stretch"
+                                Background="Transparent">
+                            <TextBlock Style="{StaticResource SegoeIcon}"
+                                       Text="&#xE8CB;"/>
+                        </Border></DataTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Visibility" Value="{Binding IsMouseOver, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}, Converter={StaticResource B2VCnv}}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentPresenter ContentSource="Header"
+                                                  ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                  x:Name="PART_Header"/>
+                            </Border>
+                            <Popup x:Name="PART_Popup"
+                                    PlacementTarget="{Binding ElementName=PART_Header}"
+                                    Placement="Bottom"
+                                    HorizontalOffset="-5"
+                                    IsOpen="{TemplateBinding IsMouseOver}"
+                                    AllowsTransparency="True">
+                                <Border Background="White"
+                                        SnapsToDevicePixels="True"
+                                        BorderThickness="1"
+                                        BorderBrush="Black">
+                                    <ItemsPresenter/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="{x:Type MenuItem}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type MenuItem}">
+                                    <Border Padding="{TemplateBinding Padding}"
+                                            Background="{TemplateBinding Background}">
+                                        <ContentPresenter ContentSource="Header"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="Cursor" Value="Hand"/>
+                        <Setter Property="Padding" Value="20,5"/>
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="LightGray"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SortOrderMarkStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSorting}" Value="False">
+                    <Setter Property="Visibility" Value="Hidden"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SortDirection}" Value="{x:Static component:ListSortDirection.Ascending}">
+                    <Setter Property="Text" Value="&#xE70D;"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding SortDirection}" Value="{x:Static component:ListSortDirection.Descending}">
+                    <Setter Property="Text" Value="&#xE70E;"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <DataTemplate DataType="{x:Type local:StringColumnViewModel}">
+            <DockPanel HorizontalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Top"
+                           Style="{StaticResource SortOrderMarkStyle}"/>
+                <TextBox DockPanel.Dock="Right" Width="120"
+                         Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"
+                         x:Name="filterText">
+                    <TextBox.Style>
+                        <Style TargetType="{x:Type TextBox}">
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding FilterText}" Value=""/>
+                                        <Condition Binding="{Binding IsFocused, RelativeSource={RelativeSource Self}}" Value="False"/>
+                                        <Condition Binding="{Binding IsMouseOver, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}}" Value="False"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="TextChanged">
+                            <i:InvokeCommandAction Command="{Binding FilterCommand}"/>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+                <HeaderedContentControl DockPanel.Dock="Right"
+                                        Style="{StaticResource FilterMenuStyle}">
+                    <HeaderedContentControl.Header>
+                        <Button Style="{StaticResource FilterButtonStyle}"/>
+                    </HeaderedContentControl.Header>
+                </HeaderedContentControl>
+                <MenuItem Style="{StaticResource SortMenuStyle}"
+                          DockPanel.Dock="Right">
+                    <MenuItem Header="昇順"
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Ascending}"/>
+                    <MenuItem Header="降順" 
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Descending}"/>
+                </MenuItem>
+                <TextBlock HorizontalAlignment="Left"
+                           Text="{Binding HeaderText}"/>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:AgeColumnViewModel}">
+            <DataTemplate.Resources>
+                <Style TargetType="{x:Type CheckBox}"
+                       BasedOn="{StaticResource FilterCheckBox}"/>
+            </DataTemplate.Resources>
+            <DockPanel HorizontalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Top"
+                           Style="{StaticResource SortOrderMarkStyle}"/>
+                <HeaderedContentControl DockPanel.Dock="Right"
+                                        Style="{StaticResource FilterMenuStyle}">
+                    <HeaderedContentControl.Header>
+                        <Button Style="{StaticResource FilterButtonStyle}"/>
+                    </HeaderedContentControl.Header>
+                    <StackPanel>
+                        <CheckBox Content="10歳未満"
+                                  IsChecked="{Binding UnderTen}"
+                                  Visibility="{Binding UnderTenExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="10歳台"
+                                  IsChecked="{Binding TeenAgers}"
+                                  Visibility="{Binding TeenAgersExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="20歳台"
+                                  IsChecked="{Binding Twenties}"
+                                  Visibility="{Binding TwentiesExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="30歳台"
+                                  IsChecked="{Binding Thirties}"
+                                  Visibility="{Binding ThirtiesExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="40歳台"
+                                  IsChecked="{Binding Fourties}"
+                                  Visibility="{Binding FourtiesExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="50歳台"
+                                  IsChecked="{Binding Fifties}"
+                                  Visibility="{Binding FiftiesExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="60歳台"
+                                  IsChecked="{Binding Sixties}"
+                                  Visibility="{Binding SixtiesExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="70歳以上"
+                                  IsChecked="{Binding OverSeventies}"
+                                  Visibility="{Binding OverSeventiesExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <Separator/>
+                        <CheckBox Content="グループ化"
+                                  IsChecked="{Binding IsGrouping}"
+                                  Command="{Binding GroupCommand}"/>
+                    </StackPanel>
+                </HeaderedContentControl>
+                <MenuItem Style="{StaticResource SortMenuStyle}"
+                          DockPanel.Dock="Right">
+                    <MenuItem Header="昇順"
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Ascending}"/>
+                    <MenuItem Header="降順" 
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Descending}"/>
+                </MenuItem>
+                <TextBlock HorizontalAlignment="Left"
+                           Text="年齢"/>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:DateTimeColumnViewModel}">
+            <DataTemplate.Resources>
+                <Style TargetType="{x:Type CheckBox}"
+                       BasedOn="{StaticResource FilterCheckBox}"/>
+            </DataTemplate.Resources>
+            <DockPanel HorizontalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Top"
+                           Style="{StaticResource SortOrderMarkStyle}"/>
+                <HeaderedContentControl DockPanel.Dock="Right"
+                                        Style="{StaticResource FilterMenuStyle}">
+                    <HeaderedContentControl.Header>
+                        <Button Style="{StaticResource FilterButtonStyle}"/>
+                    </HeaderedContentControl.Header>
+                    <StackPanel>
+                        <CheckBox Content="日付または日付範囲の選択"
+                                  IsChecked="{Binding Range}"
+                                  Command="{Binding FilterCommand}">
+                        </CheckBox>
+                        <Calendar SelectionMode="SingleRange"
+                                  x:Name="rangeFilter"
+                                  Margin="20,0,10,0">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="SelectedDatesChanged">
+                                    <i:InvokeCommandAction 
+                                            Command="{Binding SelectFilterRangeComand}" 
+                                            CommandParameter="{Binding SelectedDates, ElementName=rangeFilter}"/>
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Calendar>
+                        <CheckBox Content="今日"
+                                  IsChecked="{Binding Today}"
+                                  Visibility="{Binding TodayExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="昨日"
+                                  IsChecked="{Binding Yesterday}"
+                                  Visibility="{Binding YesterdayExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="今週"
+                                  IsChecked="{Binding ThisWeek}"
+                                  Visibility="{Binding ThisWeekExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="先週"
+                                  IsChecked="{Binding LastWeek}"
+                                  Visibility="{Binding LastWeekExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="今月"
+                                  IsChecked="{Binding ThisMonth}"
+                                  Visibility="{Binding ThisMonthExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="先月"
+                                  IsChecked="{Binding LastMonth}"
+                                  Visibility="{Binding LastMonthExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="かなり前"
+                                  IsChecked="{Binding MorePast}"
+                                  Visibility="{Binding MorePastExist, Converter={StaticResource B2VCnv}}"
+                                  Command="{Binding FilterCommand}"/>
+                        <Separator/>
+                        <CheckBox Content="グループ化"
+                                  IsChecked="{Binding IsGrouping}"
+                                  Command="{Binding GroupCommand}"/>
+                    </StackPanel>
+                </HeaderedContentControl>
+                <MenuItem Style="{StaticResource SortMenuStyle}"
+                          DockPanel.Dock="Right">
+                    <MenuItem Header="昇順"
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Ascending}"/>
+                    <MenuItem Header="降順" 
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Descending}"/>
+                </MenuItem>
+                <TextBlock HorizontalAlignment="Left"
+                           Text="最終ログイン"/>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:BloodTypeColumnViewModel}">
+            <DataTemplate.Resources>
+                <Style TargetType="{x:Type CheckBox}"
+                       BasedOn="{StaticResource FilterCheckBox}"/>
+            </DataTemplate.Resources>
+            <DockPanel HorizontalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Top"
+                           Style="{StaticResource SortOrderMarkStyle}"/>
+                <HeaderedContentControl DockPanel.Dock="Right"
+                                        Style="{StaticResource FilterMenuStyle}">
+                    <HeaderedContentControl.Header>
+                        <Button Style="{StaticResource FilterButtonStyle}"/>
+                    </HeaderedContentControl.Header>
+                    <StackPanel>
+                        <CheckBox Content="A型"
+                                  IsChecked="{Binding ShowAType}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="B型"
+                                  IsChecked="{Binding ShowBType}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="AB型"
+                                  IsChecked="{Binding ShowABType}"
+                                  Command="{Binding FilterCommand}"/>
+                        <CheckBox Content="O型"
+                                  IsChecked="{Binding ShowOType}"
+                                  Command="{Binding FilterCommand}"/>
+                        <Separator/>
+                        <CheckBox Content="グループ化"
+                                  IsChecked="{Binding IsGrouping}"
+                                  Command="{Binding GroupCommand}"/>
+                    </StackPanel>
+                </HeaderedContentControl>
+                <MenuItem Style="{StaticResource SortMenuStyle}"
+                          DockPanel.Dock="Right">
+                    <MenuItem Header="昇順"
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Ascending}"/>
+                    <MenuItem Header="降順" 
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Descending}"/>
+                </MenuItem>
+                <TextBlock HorizontalAlignment="Left"
+                           Text="血液型"/>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:UnlimitedSelectionColumnViewModel}">
+            <DataTemplate.Resources>
+                <Style TargetType="{x:Type CheckBox}"
+                       BasedOn="{StaticResource FilterCheckBox}"/>
+            </DataTemplate.Resources>
+            <DockPanel HorizontalAlignment="Stretch">
+                <TextBlock DockPanel.Dock="Top"
+                           Style="{StaticResource SortOrderMarkStyle}"/>
+                <HeaderedContentControl DockPanel.Dock="Right"
+                                        Style="{StaticResource FilterMenuStyle}">
+                    <HeaderedContentControl.Header>
+                        <Button Style="{StaticResource FilterButtonStyle}"/>
+                    </HeaderedContentControl.Header>
+                    <StackPanel>
+                        <ItemsControl MaxHeight="400"
+                                      ItemsSource="{Binding Selections}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type local:UnlimitedSelectionItemViewModel}">
+                                    <CheckBox IsChecked="{Binding IsSelected}"
+                                              Content="{Binding Value}"
+                                              Command="{Binding SelectedCommand}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Separator/>
+                        <CheckBox Content="グループ化"
+                                  IsChecked="{Binding IsGrouping}"
+                                  Command="{Binding GroupCommand}"/>
+                    </StackPanel>
+                </HeaderedContentControl>
+                <MenuItem Style="{StaticResource SortMenuStyle}"
+                          DockPanel.Dock="Right">
+                    <MenuItem Header="昇順"
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Ascending}"/>
+                    <MenuItem Header="降順" 
+                              Command="{Binding SortCommand}"
+                              CommandParameter="{x:Static component:ListSortDirection.Descending}"/>
+                </MenuItem>
+                <TextBlock HorizontalAlignment="Left"
+                           Text="出身地"/>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:StringViewModel}">
+            <TextBlock>
+                <Run Text="{Binding PreviousFilteredText}"/>
+                <Run Text="{Binding FilteredText}" Background="Yellow"/>
+                <Run Text="{Binding FollowingFilteredText}"/>
+            </TextBlock>
+        </DataTemplate>
+        <DataTemplate x:Key="AgeCell" DataType="{x:Type local:PersonViewModel}">
+            <TextBlock Text="{Binding Age, StringFormat={}{0}歳}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="BloodTypeCell" DataType="{x:Type local:PersonViewModel}">
+            <TextBlock Text="{Binding BloodType, StringFormat={}{0}型}"/>
+        </DataTemplate>
+    </Application.Resources>
+</Application>

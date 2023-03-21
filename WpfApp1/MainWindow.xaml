@@ -1,0 +1,89 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top"
+                    Orientation="Horizontal">
+            <CheckBox Content="名前" 
+                      IsChecked="True"
+                      Command="{Binding ShowNameCommand}"
+                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+            <CheckBox Content="ふりがな" 
+                      IsChecked="True"
+                      Command="{Binding ShowFuriganaCommand}"
+                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+            <CheckBox Content="年齢" 
+                      IsChecked="True"
+                      Command="{Binding ShowAgeCommand}"
+                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+            <CheckBox Content="最終ログイン" 
+                      IsChecked="True"
+                      Command="{Binding ShowLastLoginCommand}"
+                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+            <CheckBox Content="血液型"
+                      IsChecked="True"
+                      Command="{Binding ShowBloodTypeCommand}"
+                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+            <CheckBox Content="出身地"
+                      IsChecked="True"
+                      Command="{Binding ShowBirthplaceCommand}"
+                      CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
+        </StackPanel>
+        <ListView ItemsSource="{Binding Persons}">
+            <ListView.View>
+                <GridView local:GridViewHelper.DynamicColumns="{Binding Columns}"/>
+            </ListView.View>
+            <ListView.Resources>
+                <Style TargetType="{x:Type GridViewColumnHeader}">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Command" Value="{Binding Content.SortCommand, RelativeSource={RelativeSource Self}}"/>
+                    <Setter Property="CommandParameter" Value="{x:Null}"/>
+                </Style>
+            </ListView.Resources>
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True">
+                                            <Expander.Header>
+                                                <DockPanel>
+                                                    <ContentControl Content="{Binding Name}">
+                                                        <ContentControl.Resources>
+                                                            <DataTemplate DataType="{x:Type local:GroupHeaderViewModel}">
+                                                                <TextBlock FontWeight="Bold" Text="{Binding Title}" 
+                                                                           Margin="5,0"/>
+                                                            </DataTemplate>
+                                                            <DataTemplate DataType="{x:Type system:String}">
+                                                                <TextBlock FontWeight="Bold" Text="{Binding}" 
+                                                                           Margin="5,0"/>
+                                                            </DataTemplate>
+                                                        </ContentControl.Resources>
+                                                    </ContentControl>
+                                                    <TextBlock FontWeight="Bold"
+                                                               Text="{Binding ItemCount, StringFormat={}{0}人}"/>
+                                                </DockPanel>
+                                            </Expander.Header>
+                                            <ItemsPresenter/>
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+            </ListView.GroupStyle>
+        </ListView>
+    </DockPanel>
+</Window>
