@@ -205,6 +205,11 @@ namespace WpfApp1
             }
         }
 
+        protected override SortDescription SortOverride(ListSortDirection direction)
+        {
+            return new SortDescription(this.propertyName, direction);
+        }
+
         protected override bool FilterOverride(object itemVm)
         {
             if (!this.IsFiltering) { return true; }
@@ -231,11 +236,6 @@ namespace WpfApp1
             this.filterRange = filterRange;
             this.Range = true;
             this.FilterCommand.Execute(null);
-        }
-
-        protected override SortDescription SortOverride(ListSortDirection direction)
-        {
-            return new SortDescription(this.propertyName, direction);
         }
 
         public override GroupDescription GroupOverride()

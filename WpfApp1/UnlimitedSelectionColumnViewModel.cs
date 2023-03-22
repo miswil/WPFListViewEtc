@@ -39,6 +39,11 @@ namespace WpfApp1
             }
         }
 
+        protected override SortDescription SortOverride(ListSortDirection direction)
+        {
+            return new SortDescription(this.propertyName, direction);
+        }
+
         protected override bool FilterOverride(object itemVm)
         {
             if (!this.IsFiltering) { return true; }
@@ -49,11 +54,6 @@ namespace WpfApp1
             }
             var value = property.GetValue(itemVm);
             return this.Selections.FirstOrDefault(s => object.Equals(s.Value, value))?.IsSelected ?? false;
-        }
-
-        protected override SortDescription SortOverride(ListSortDirection direction)
-        {
-            return new SortDescription(this.propertyName, direction);
         }
 
         public override GroupDescription GroupOverride()

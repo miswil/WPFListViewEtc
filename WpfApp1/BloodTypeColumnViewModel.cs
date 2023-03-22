@@ -54,6 +54,11 @@ namespace WpfApp1
             this.ShowAType || this.ShowBType ||
             this.ShowABType || this.ShowOType;
 
+        protected override SortDescription SortOverride(ListSortDirection direction)
+        {
+            return new SortDescription(nameof(PersonViewModel.BloodType), direction);
+        }
+
         protected override bool FilterOverride(object itemVm)
         {
             if (itemVm is not PersonViewModel pvm) { return false; }
@@ -62,11 +67,6 @@ namespace WpfApp1
                 (this.ShowBType && pvm.BloodType == BloodType.B) ||
                 (this.ShowABType && pvm.BloodType == BloodType.AB) ||
                 (this.ShowOType && pvm.BloodType == BloodType.O); ;
-        }
-
-        protected override SortDescription SortOverride(ListSortDirection direction)
-        {
-            return new SortDescription(nameof(PersonViewModel.BloodType), direction);
         }
 
         public override GroupDescription GroupOverride()

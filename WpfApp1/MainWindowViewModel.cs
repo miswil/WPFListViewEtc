@@ -164,22 +164,6 @@ namespace WpfApp1
             }
         }
 
-        private void FilterItems(object? sender, EventArgs e)
-        {
-            var view = CollectionViewSource.GetDefaultView(this.Persons);
-            view.Filter = item =>
-            {
-                if (item is not PersonViewModel vm) { return false; }
-                var allFilterPassed = true;
-                foreach (var column in this.Columns)
-                {
-                    var isPassed = column.Filter(vm);
-                    allFilterPassed = allFilterPassed && isPassed;
-                }
-                return allFilterPassed;
-            };
-        }
-
         private void SortItems(object? sender, ListSortDirection? requestedDirection)
         {
             if (sender is not ColumnViewModelBase column) { return; }
@@ -195,13 +179,29 @@ namespace WpfApp1
                     _ => throw new ArgumentException(nameof(requestedDirection))
                 };
             }
-            else 
+            else
             {
                 nextDirection = requestedDirection ?? ListSortDirection.Ascending;
             }
             this.currentSortColumn.ResetSort();
             view.SortDescriptions.Add(column.Sort(nextDirection));
             this.currentSortColumn = column;
+        }
+
+        private void FilterItems(object? sender, EventArgs e)
+        {
+            var view = CollectionViewSource.GetDefaultView(this.Persons);
+            view.Filter = item =>
+            {
+                if (item is not PersonViewModel vm) { return false; }
+                var allFilterPassed = true;
+                foreach (var column in this.Columns)
+                {
+                    var isPassed = column.Filter(vm);
+                    allFilterPassed = allFilterPassed && isPassed;
+                }
+                return allFilterPassed;
+            };
         }
 
         private void GroupItems(object? sender, EventArgs e)

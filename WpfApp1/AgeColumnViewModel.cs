@@ -160,6 +160,11 @@ namespace WpfApp1
             this.persons.CollectionChanged -= this.Persons_CollectionChanged;
         }
 
+        protected override SortDescription SortOverride(ListSortDirection direction)
+        {
+            return new SortDescription(nameof(PersonViewModel.Age), direction);
+        }
+
         protected override bool FilterOverride(object itemVm)
         {
             if (itemVm is not PersonViewModel pvm) { return false; }
@@ -174,11 +179,6 @@ namespace WpfApp1
                 (this.Fifties && category == AgeCategory.Fifties) ||
                 (this.Sixties && category == AgeCategory.Sixties) ||
                 (this.overSeventies && category == AgeCategory.OverSeventies);
-        }
-
-        protected override SortDescription SortOverride(ListSortDirection direction)
-        {
-            return new SortDescription(nameof(PersonViewModel.Age), direction);
         }
 
         public override GroupDescription GroupOverride()

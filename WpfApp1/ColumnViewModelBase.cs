@@ -10,20 +10,21 @@ namespace WpfApp1
     {
         public virtual string? DisplayMenber { get; } = null;
         public virtual object? CellTemplateResourceKey { get; } = null;
-        public abstract bool IsFiltering { get; }
 
         private bool isSorting;
-        public bool IsSorting 
-        { 
+        public bool IsSorting
+        {
             get => this.isSorting;
-            private set => this.SetProperty(ref this.isSorting, value); 
+            private set => this.SetProperty(ref this.isSorting, value);
         }
-        private ListSortDirection? sortDirection; 
+        private ListSortDirection? sortDirection;
         public ListSortDirection? SortDirection
         {
             get => this.sortDirection;
             private set => this.SetProperty(ref this.sortDirection, value);
         }
+
+        public abstract bool IsFiltering { get; }
 
         private bool grouping;
         public bool IsGrouping
@@ -32,13 +33,13 @@ namespace WpfApp1
             set => this.SetProperty(ref this.grouping, value);
         }
 
-        public ICommand FilterCommand { get; }
         public ICommand SortCommand { get; }
+        public ICommand FilterCommand { get; }
         public ICommand GroupCommand { get; }
         public ICommand ResetFilterAndGroupCommand { get; }
 
-        public event EventHandler? FilterRequested;
         public event EventHandler<ListSortDirection?>? SortRequested;
+        public event EventHandler? FilterRequested;
         public event EventHandler? GroupingRequested;
 
         public ColumnViewModelBase()
@@ -49,18 +50,13 @@ namespace WpfApp1
             this.ResetFilterAndGroupCommand = new RelayCommand(this.ResetFilterCommandExecute);
         }
 
-        public bool Filter(object itemVm)
-        {
-            return this.FilterOverride(itemVm);
-        }
-        protected abstract bool FilterOverride(object itemVm);
-
         public SortDescription Sort(ListSortDirection direction)
         {
             this.IsSorting = true;
             this.SortDirection = direction;
             return this.SortOverride(direction);
         }
+
         protected abstract SortDescription SortOverride(ListSortDirection direction);
 
         public void ResetSort()
@@ -68,6 +64,12 @@ namespace WpfApp1
             this.IsSorting = false;
             this.SortDirection = null;
         }
+
+        public bool Filter(object itemVm)
+        {
+            return this.FilterOverride(itemVm);
+        }
+        protected abstract bool FilterOverride(object itemVm);
 
         public GroupDescription Group()
         {
@@ -81,14 +83,14 @@ namespace WpfApp1
             this.IsGrouping = false;
         }
 
-        private void FilterCommandExecute()
-        {
-            this.FilterRequested?.Invoke(this, EventArgs.Empty);
-        }
-
         private void SortCommandExecute(ListSortDirection? sortDirection)
         {
             this.SortRequested?.Invoke(this, sortDirection);
+        }
+
+        private void FilterCommandExecute()
+        {
+            this.FilterRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void GroupCommandExecute()

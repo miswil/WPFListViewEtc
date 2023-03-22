@@ -27,16 +27,16 @@ namespace WpfApp1
             this.HeaderText = headerText;
         }
 
+        protected override SortDescription SortOverride(ListSortDirection direction)
+        {
+            return new SortDescription($"{this.propertyName}.{nameof(StringViewModel.Value)}", direction);
+        }
+
         protected override bool FilterOverride(object itemVm)
         {
             return
                 (itemVm.GetType().GetProperty(this.propertyName)!.GetValue(itemVm) as StringViewModel)?.Filter(this.FilterText)
                 ?? false;
-        }
-
-        protected override SortDescription SortOverride(ListSortDirection direction)
-        {
-            return new SortDescription($"{this.propertyName}.{nameof(StringViewModel.Value)}", direction);
         }
 
         public override GroupDescription GroupOverride()
