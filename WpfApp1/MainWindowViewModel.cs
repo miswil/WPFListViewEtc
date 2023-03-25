@@ -227,7 +227,8 @@ namespace WpfApp1
         private void InitData()
         {
             var today = DateTime.Today;
-            var r = new Random(); this.Persons.Add(new PersonViewModel(new Person("山本 美津子", "やまもと みつこ", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.B, "福岡県")));
+            var r = new Random();
+            this.Persons.Add(new PersonViewModel(new Person("山本 美津子", "やまもと みつこ", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.B, "福岡県")));
             this.Persons.Add(new PersonViewModel(new Person("渡部 敬子", "わたなべ けいこ", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.A, "神奈川県")));
             this.Persons.Add(new PersonViewModel(new Person("宮田 修平", "みやた しゅうへい", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.A, "福岡県")));
             this.Persons.Add(new PersonViewModel(new Person("近藤 大輝", "こんどう たいき", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.B, "東京都")));
@@ -277,7 +278,6 @@ namespace WpfApp1
             this.Persons.Add(new PersonViewModel(new Person("山本 亮平", "やまもと りょうへい", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.B, "大阪府")));
             this.Persons.Add(new PersonViewModel(new Person("古庄 穣", "ふるしょう ゆたか", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.B, "東京都")));
             this.Persons.Add(new PersonViewModel(new Person("山本 人美", "やまもと ひとみ", r.Next(0, 80), today.AddDays(-r.Next(0, 90)), BloodType.O, "宮崎県")));
-
         }
     }
 }

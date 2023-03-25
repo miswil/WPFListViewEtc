@@ -94,7 +94,8 @@
                                 Background="Transparent">
                             <TextBlock Style="{StaticResource SegoeIcon}"
                                        Text="&#xE8CB;"/>
-                        </Border></DataTemplate>
+                        </Border>
+                    </DataTemplate>
                 </Setter.Value>
             </Setter>
             <Setter Property="Visibility" Value="{Binding IsMouseOver, Mode=OneWay, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GridViewColumnHeader}}, Converter={StaticResource B2VCnv}}"/>
