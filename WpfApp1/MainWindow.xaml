@@ -38,7 +38,8 @@
                       Command="{Binding ShowBirthplaceCommand}"
                       CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}}"/>
         </StackPanel>
-        <ListView ItemsSource="{Binding Persons}">
+        <ListView ItemsSource="{Binding Persons}"
+                  VirtualizingPanel.IsVirtualizingWhenGrouping="True">
             <ListView.View>
                 <GridView local:GridViewHelper.DynamicColumns="{Binding Columns}"/>
             </ListView.View>
